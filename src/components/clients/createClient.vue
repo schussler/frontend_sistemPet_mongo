@@ -3,7 +3,7 @@
     <v-dialog v-model="dialog" max-width="600">
       <v-card prepend-icon="mdi-account" title="Cadastrar Cliente">
         <v-card-text>
-          <v-form >
+          <v-form>
             <v-row>
               <v-col cols="12" md="6">
                 <v-text-field
@@ -34,7 +34,9 @@
               </v-col>
             </v-row>
 
-            <small class="text-caption text-medium-emphasis">* Campos obrigatórios</small>
+            <small class="text-caption text-medium-emphasis"
+              >* Campos obrigatórios</small
+            >
 
             <v-divider></v-divider>
 
@@ -51,56 +53,56 @@
 </template>
 
 <script>
-import axios from "axios"
+import axios from "axios";
 export default {
   data() {
     return {
       dialog: false,
-      nomeCliente: '',
-      contato: '',
-      endereco: '',
+      nomeCliente: "",
+      contato: "",
+      endereco: "",
     };
   },
   methods: {
-    
-  async  createClient() {
-       // Lógica de confirmação aqui
-       const token = localStorage.getItem("token");
+    async createClient() {
+      // Lógica de confirmação aqui
+      const token = localStorage.getItem("token");
       const axiosConfig = {
         headers: {
           authorization: `Bearer ${token}`,
         },
       };
       if (!this.nomeCliente || this.nomeCliente.trim() === "") {
-        return alert("nome obrigatorio")
+        return alert("nome obrigatorio");
       }
       if (!this.contato || this.contato.trim() === "") {
-        return  alert("contato obrigatorio")
-
+        return alert("contato obrigatorio");
       }
       const newClient = {
-        name:this.nomeCliente,
+        name: this.nomeCliente,
         phone: this.contato,
-        address: this.endereco
-      }
-      await  axios
+        address: this.endereco,
+      };
+      await axios
         .post("http://localhost:3000/clients", newClient, axiosConfig)
         .then(() => {
-         location.reload();
+          location.reload();
           return;
         })
         .catch((err) => {
-          alert(err.message)
-
-        }); 
+          alert(err.message);
+        });
     },
-    
+
     formatarTelefone() {
       // Remover todos os caracteres que não são dígitos
-      let phoneNumber = this.contato.replace(/\D/g, '');
-      
+      let phoneNumber = this.contato.replace(/\D/g, "");
+
       // Aplicar a formatação (00) 99999-9999 em tempo real
-      let formattedPhoneNumber = phoneNumber.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+      let formattedPhoneNumber = phoneNumber.replace(
+        /(\d{2})(\d{5})(\d{4})/,
+        "($1) $2-$3"
+      );
 
       // Atualizar o modelo com o número formatado
       this.contato = formattedPhoneNumber;

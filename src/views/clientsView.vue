@@ -1,9 +1,10 @@
 <template>
   <v-container fluid class="view">
-    <createClient ref="createClient"/>
+    <createClient ref="createClient" />
+    <datailsClient ref="datailsClient" />
     <v-card flat>
       <v-card-title class="d-flex align-center pe-2">
-        <v-btn text color="primary" @click="openDialog">
+        <v-btn text color="primary" @click="openDialogCreate">
           <v-icon>mdi-account-plus</v-icon>
         </v-btn>
         <v-spacer></v-spacer>
@@ -33,15 +34,22 @@
 
         <template v-slot:[`item.pets`]="{ item }">
           <span class="nowrap">
-            {{ item.pets.length > 0 ? item.pets.map(pet => pet.name).join(' - ') : 'sem pets cadastrados' }}
+            {{
+              item.pets.length > 0
+                ? item.pets.map((pet) => pet.name).join(" - ")
+                : "sem pets cadastrados"
+            }}
           </span>
         </template>
 
         <!-- Coluna Contato -->
         <template v-slot:[`item.phone`]="{ item }">
-          <span class="nowrap">{{ formatarTelefone(item.phone) }}<v-icon class="pl-3 icon_whats" @click="sendWhatsapp(item.phone)">mdi-whatsapp</v-icon></span>
-            
-            
+          <span class="nowrap"
+            >{{ formatarTelefone(item.phone)
+            }}<v-icon class="pl-3 icon_whats" @click="sendWhatsapp(item.phone)"
+              >mdi-whatsapp</v-icon
+            ></span
+          >
         </template>
 
         <!-- Coluna endereço -->
@@ -51,7 +59,7 @@
 
         <!-- Coluna açoes -->
         <template v-slot:[`item.actions`]="{ item }">
-          <v-btn color="primary" @click="view(item._id)">
+          <v-btn color="primary" @click="openDialogDatails(item)">
             <v-icon>mdi-eye</v-icon>
           </v-btn>
         </template>
@@ -63,7 +71,11 @@
               <v-row justify="center">
                 <v-col cols="5">
                   <v-container class="max-width">
-                    <v-pagination v-model="page" :length="pageCount" rounded="circle"></v-pagination>
+                    <v-pagination
+                      v-model="page"
+                      :length="pageCount"
+                      rounded="circle"
+                    ></v-pagination>
                   </v-container>
                 </v-col>
               </v-row>
@@ -77,62 +89,70 @@
 
 <script>
 import axios from "axios";
-import createClient from "../components/clients/createClient.vue"
+import createClient from "../components/clients/createClient.vue";
+import datailsClient from "../components/clients/datailsClient.vue";
 export default {
-  components:{
-    createClient
+  components: {
+    createClient,
+    datailsClient,
   },
   data() {
     return {
       page: 1,
       itemsPerPage: 10,
-      search: '',
+      search: "",
       loading: false,
       items: [],
       headers: [
-        { title: 'Nome', align: 'start', sortable: true, value: 'name' },
-        { title: 'Pets', align: 'start', sortable: true, value: 'pets' },
-        { title: 'Contato', align: 'start', sortable: true, value: 'phone' },
-        { title: 'Endereço', align: 'start', sortable: true, value: 'address' },
-        { title: 'Ações', align: 'center', sortable: false, value: 'actions' },
+        { title: "Nome", align: "start", sortable: true, value: "name" },
+        { title: "Pets", align: "start", sortable: true, value: "pets" },
+        { title: "Contato", align: "start", sortable: true, value: "phone" },
+        { title: "Endereço", align: "start", sortable: true, value: "address" },
+        { title: "Ações", align: "center", sortable: false, value: "actions" },
       ],
-    }
+    };
   },
   methods: {
-    openDialog() {
+    openDialogCreate() {
       this.$refs.createClient.dialog = true; // Altera o valor de dialog para true no componente createClient.vue
-      
-  },
+    },
+    openDialogDatails(item) {
+      this.$refs.datailsClient.dialog = true;
+      this.$refs.datailsClient.item = item;
+    },
     view(id) {
       alert("Visualizando item com ID: " + id);
     },
     formatarTelefone(telefone) {
-      if (!telefone) return 'telefone nao cadastrado';
+      if (!telefone) return "telefone nao cadastrado";
       // Verifica se telefone é uma string
-      if (typeof telefone !== 'string') {
+      if (typeof telefone !== "string") {
         // Converte telefone para string (se possível)
         telefone = String(telefone);
       }
       // Formatação específica para (21) 98181-0650
       if (telefone.length === 11) {
-        return `(${telefone.substring(0, 2)}) ${telefone.substring(2, 7)}-${telefone.substring(7, 11)}`;
+        return `(${telefone.substring(0, 2)}) ${telefone.substring(
+          2,
+          7
+        )}-${telefone.substring(7, 11)}`;
       }
       // Outros formatos podem ser tratados aqui conforme necessário
       return telefone; // Retorna telefone sem formatação se não atender ao critério
     },
-    sendWhatsapp(phone){
-         // Remover todos os caracteres que não sejam dígitos
-    
-    // Montar o link do WhatsApp
-    const linkWhatsapp = `https://web.whatsapp.com/send?phone=55${phone}`;
-    
-    // Abrir o link em uma nova aba
-    window.open(linkWhatsapp, '_blank');
-    }
+    sendWhatsapp(phone) {
+      // Remover todos os caracteres que não sejam dígitos
+
+      // Montar o link do WhatsApp
+      const linkWhatsapp = `https://web.whatsapp.com/send?phone=55${phone}`;
+
+      // Abrir o link em uma nova aba
+      window.open(linkWhatsapp, "_blank");
+    },
   },
   computed: {
     pageCount() {
-      return Math.ceil(this.items.length / this.itemsPerPage)
+      return Math.ceil(this.items.length / this.itemsPerPage);
     },
   },
   mounted() {
@@ -153,7 +173,7 @@ export default {
         this.loading = false; // Marca o loading como falso após os dados serem carregados
       });
   },
-}
+};
 </script>
 
 <style scoped>
@@ -165,7 +185,7 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.icon_whats:hover{
+.icon_whats:hover {
   color: green;
 }
 </style>
