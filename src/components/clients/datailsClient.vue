@@ -102,7 +102,10 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn text @click="dialog = false">Fechar</v-btn>
-              <v-btn color="primary" @click="createClient">Editar</v-btn>
+              <v-btn color="primary" @click="editClient(item._id)"
+                >Editar</v-btn
+              >
+              <v-btn color="red" @click="deleteClient(item._id)">Deletar</v-btn>
             </v-card-actions>
           </v-form>
         </v-card-text>
@@ -125,6 +128,27 @@ export default {
     };
   },
   methods: {
+    async deleteClient(_id) {
+      const token = localStorage.getItem("token");
+      const axiosConfig = {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      };
+
+      if (!_id) {
+        return alert("id nao pode ser nulo");
+      }
+      await axios
+        .delete(`http://localhost:3000/clients/${_id}`, axiosConfig)
+        .then(() => {
+          location.reload();
+          return;
+        })
+        .catch((err) => {
+          alert(err.message);
+        });
+    },
     async createClient() {
       // Lógica de confirmação aqui
       const token = localStorage.getItem("token");
