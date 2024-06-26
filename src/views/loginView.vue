@@ -57,10 +57,13 @@ export default {
   methods: {
     async login() {
       try {
-        const response = await axios.post("http://localhost:3000/login", {
-          email: this.email,
-          password: this.password,
-        });
+        const response = await axios.post(
+          "https://backend-sistem-pet-mongo.vercel.app/login",
+          {
+            email: this.email,
+            password: this.password,
+          }
+        );
         localStorage.setItem("token", response.data.token);
 
         // Redirecionar o usuário para a página desejada

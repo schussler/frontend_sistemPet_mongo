@@ -101,7 +101,7 @@ export default {
         };
 
         await axios.post(
-          "http://localhost:3000/clients",
+          "https://backend-sistem-pet-mongo.vercel.app/clients",
           newClient,
           axiosConfig
         );

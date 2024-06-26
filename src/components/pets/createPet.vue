@@ -99,7 +99,11 @@ export default {
           obs: this.obs,
         };
         console.log(newPet);
-        await axios.post("http://localhost:3000/pets", newPet, axiosConfig);
+        await axios.post(
+          "https://backend-sistem-pet-mongo.vercel.app/pets",
+          newPet,
+          axiosConfig
+        );
         this.dialog = false;
         this.$swal
           .fire({

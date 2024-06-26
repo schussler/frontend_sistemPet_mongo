@@ -1,31 +1,41 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import LoginView from '../views/loginView.vue'
+import { createRouter, createWebHistory } from "vue-router";
+import LoginView from "../views/loginView.vue";
 const routes = [
   {
-    path: '/login',
-    name: 'Login',
-    component: LoginView
+    path: "/login",
+    name: "Login",
+    component: LoginView,
   },
-   {
-     path: '/clients',
-     name: 'clients',
-     component: () => import('../views/clientsView.vue'),
-     meta: { requiresAuth: true }
-
-   }
-]
+  {
+    path: "/",
+    name: "home",
+    component: LoginView,
+  },
+  {
+    path: "/clients",
+    name: "clients",
+    component: () => import("../views/clientsView.vue"),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/calendar",
+    name: "calendar",
+    component: () => import("../views/calendarView.vue"),
+    meta: { requiresAuth: true },
+  },
+];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
-  routes
-})
+  routes,
+});
 // Função para verificar se o token é válido
 function isTokenValid(token) {
   // Implementar a lógica para verificar a validade do token
   // Isso pode incluir verificar a expiração do token ou validá-lo no servidor
   // Aqui está um exemplo simples de verificação de expiração de token JWT
   try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
+    const payload = JSON.parse(atob(token.split(".")[1]));
     const expiration = payload.exp;
     const currentTime = Math.floor(Date.now() / 1000);
     return expiration > currentTime;
@@ -50,4 +60,4 @@ router.beforeEach((to, from, next) => {
     next();
   }
 });
-export default router
+export default router;

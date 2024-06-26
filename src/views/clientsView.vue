@@ -1,5 +1,7 @@
 <template>
   <v-container fluid class="view">
+    <bottom_bar />
+
     <createClient ref="createClient" />
     <datailsClient ref="datailsClient" />
     <v-card flat>
@@ -92,10 +94,13 @@
 import axios from "axios";
 import createClient from "../components/clients/createClient.vue";
 import datailsClient from "../components/clients/datailsClient.vue";
+import bottom_bar from "../components/bottomBar.vue";
+
 export default {
   components: {
     createClient,
     datailsClient,
+    bottom_bar,
   },
   data() {
     return {
@@ -162,7 +167,7 @@ export default {
       },
     };
     axios
-      .get("http://localhost:3000/clients", axiosConfig)
+      .get("https://backend-sistem-pet-mongo.vercel.app/clients", axiosConfig)
       .then((response) => {
         this.items = response.data;
         this.loading = false; // Marca o loading como falso após os dados serem carregados

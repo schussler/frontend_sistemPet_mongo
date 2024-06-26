@@ -163,7 +163,10 @@ export default {
           /* Read more about isConfirmed, isDenied below */
           if (result.isDenied) {
             try {
-              axios.delete(`http://localhost:3000/pets/${_id}`, axiosConfig);
+              axios.delete(
+                `https://backend-sistem-pet-mongo.vercel.app/pets/${_id}`,
+                axiosConfig
+              );
               this.$swal.fire("Excluido!", "", "success").then(() => {
                 location.reload();
               });
@@ -204,7 +207,7 @@ export default {
             try {
               axios
                 .put(
-                  `http://localhost:3000/pets/${pet._id}`,
+                  `https://backend-sistem-pet-mongo.vercel.app/pets/${pet._id}`,
                   updatePet,
                   axiosConfig
                 )
@@ -257,7 +260,10 @@ export default {
           /* Read more about isConfirmed, isDenied below */
           if (result.isDenied) {
             try {
-              axios.delete(`http://localhost:3000/clients/${_id}`, axiosConfig);
+              axios.delete(
+                `https://backend-sistem-pet-mongo.vercel.app/clients/${_id}`,
+                axiosConfig
+              );
               this.$swal.fire("Excluido!", "", "success").then(() => {
                 location.reload();
               });
@@ -304,7 +310,7 @@ export default {
             try {
               axios
                 .put(
-                  `http://localhost:3000/clients/${item._id}`,
+                  `https://backend-sistem-pet-mongo.vercel.app/clients/${item._id}`,
                   updateClient,
                   axiosConfig
                 )

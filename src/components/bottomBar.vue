@@ -1,6 +1,11 @@
 <template>
-  <v-bottom-navigation v-model="value" :bg-color="color" mode="fixed" class="z-10 bottom-0 w-full">
-    <v-btn>
+  <v-bottom-navigation
+    v-model="value"
+    :bg-color="color"
+    mode="fixed"
+    class="z-10 bottom-0 w-full"
+  >
+    <v-btn :to="{ path: '/calendar' }">
       <v-icon>mdi-calendar-month</v-icon>
       <span>Agenda</span>
     </v-btn>
@@ -30,15 +35,15 @@ export default {
     color() {
       switch (this.value) {
         case 0:
-          return 'blue-grey';
+          return "blue-grey";
         case 1:
-          return 'teal';
+          return "teal";
         case 2:
-          return 'brown';
+          return "brown";
         case 3:
-          return 'indigo';
+          return "indigo";
         default:
-          return 'blue-grey';
+          return "blue-grey";
       }
     },
   },
