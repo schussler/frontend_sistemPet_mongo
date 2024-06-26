@@ -1,19 +1,18 @@
 <template>
   <div class="text-center">
     <v-dialog
-      class="v-dialog"
       v-model="dialog"
-      max-width="600"
       style="overflow: initial; z-index: initial"
+      max-width="600"
     >
-      <v-card prepend-icon="mdi-account" title="Cadastrar Cliente">
+      <v-card prepend-icon="mdi mdi-paw" title="Cadastrar Pet">
         <v-card-text>
           <v-form>
             <v-row>
               <v-col cols="12" md="6">
                 <v-text-field
-                  v-model="nomeCliente"
-                  label="Nome do Cliente*"
+                  v-model="nomePet"
+                  label="Nome do Pet*"
                   required
                   variant="outlined"
                 ></v-text-field>
@@ -21,19 +20,17 @@
 
               <v-col cols="12" md="6">
                 <v-text-field
-                  v-model="contato"
-                  label="Contato*"
+                  v-model="race"
+                  label="Raça do pet*"
                   required
                   variant="outlined"
-                  hint="Não colocar zero na frente do número"
-                  @input="formatarTelefone"
                 ></v-text-field>
               </v-col>
 
               <v-col cols="12">
                 <v-textarea
-                  v-model="endereco"
-                  label="Endereço"
+                  v-model="obs"
+                  label="Observaçoes no Pet"
                   variant="outlined"
                 ></v-textarea>
               </v-col>
@@ -48,9 +45,7 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn text @click="dialog = false">Fechar</v-btn>
-              <v-btn color="primary" @click="createClient(contato)"
-                >Criar</v-btn
-              >
+              <v-btn color="primary" @click="createPet">Criar</v-btn>
             </v-card-actions>
           </v-form>
         </v-card-text>
@@ -65,14 +60,14 @@ export default {
   data() {
     return {
       dialog: false,
-      nomeCliente: "",
-      contato: "",
-      endereco: "",
-      ctt: "",
+      id: "",
+      nomePet: "",
+      race: "",
+      obs: "",
     };
   },
   methods: {
-    async createClient() {
+    async createPet() {
       // Lógica de confirmação aqui
       const token = localStorage.getItem("token");
       const axiosConfig = {
@@ -81,35 +76,35 @@ export default {
         },
       };
       try {
-        if (!this.nomeCliente || this.nomeCliente.trim() === "") {
+        if (!this.nomePet || this.nomePet.trim() === "") {
           return window.Toast.fire({
             icon: "error",
             title: "Nome é obrigatorio",
+            popup: {
+              className: "...",
+              zIndex: 30000,
+            },
           });
         }
-        if (!this.contato || this.contato.trim() === "") {
+        if (!this.race || this.race.trim() === "") {
           return window.Toast.fire({
             icon: "error",
-            title: "Contato é obrigatorio",
+            title: "Raça é obrigatorio",
           });
         }
-
-        const newClient = {
-          name: this.nomeCliente,
-          phone: this.ctt,
-          address: this.endereco,
+        const newPet = {
+          clientId: this.id,
+          name: this.nomePet,
+          race: this.race,
+          obs: this.obs,
         };
-
-        await axios.post(
-          "http://localhost:3000/clients",
-          newClient,
-          axiosConfig
-        );
+        console.log(newPet);
+        await axios.post("http://localhost:3000/pets", newPet, axiosConfig);
         this.dialog = false;
         this.$swal
           .fire({
             title: "Eba",
-            text: "Usuario cadastrado com sucesso",
+            text: "Pet cadastrado com sucesso",
             icon: "success",
           })
 
@@ -119,26 +114,12 @@ export default {
             }
           });
       } catch (err) {
+        console.log(err.response.data.message);
         window.Toast.fire({
           icon: "error",
           title: `${err}`,
         });
       }
-    },
-
-    formatarTelefone() {
-      // Remover todos os caracteres que não são dígitos
-      let phoneNumber = this.contato.replace(/\D/g, "");
-      // Aplicar a formatação (00) 99999-9999 em tempo real
-      let formattedPhoneNumber = phoneNumber.replace(
-        /(\d{2})(\d{5})(\d{4})/,
-        "($1) $2-$3"
-      );
-      let n = this.contato;
-      this.ctt = n;
-
-      // Atualizar o modelo com o número formatado
-      this.contato = formattedPhoneNumber;
     },
   },
 };

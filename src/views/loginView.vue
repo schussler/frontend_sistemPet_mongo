@@ -1,5 +1,5 @@
 <template>
-  <v-container class="d-flex justify-center align-center fill-height ">
+  <v-container class="d-flex justify-center align-center fill-height">
     <v-card class="mx-auto" width="400">
       <v-card-title>
         <span class="font-weight-black">Login</span>
@@ -14,7 +14,6 @@
             required
             prepend-icon="mdi-email"
             autocomplete="username"
-
           ></v-text-field>
 
           <v-text-field
@@ -27,12 +26,7 @@
             autocomplete="current-password"
           ></v-text-field>
 
-          <v-btn
-            :disabled="!valid"
-            color="primary"
-            class="mr-4"
-            @click="login"
-          >
+          <v-btn :disabled="!valid" color="primary" class="mr-4" @click="login">
             Login
           </v-btn>
         </v-form>
@@ -48,16 +42,16 @@ export default {
   data() {
     return {
       valid: false,
-      email: '',
-      password: '',
+      email: "",
+      password: "",
       emailRules: [
-        v => !!v || 'E-mail é obrigatório',
-        v => /.+@.+\..+/.test(v) || 'E-mail deve ser válido'
+        (v) => !!v || "E-mail é obrigatório",
+        (v) => /.+@.+\..+/.test(v) || "E-mail deve ser válido",
       ],
       passwordRules: [
-        v => !!v || 'Senha é obrigatória',
-        v => v.length >= 6 || 'Senha deve ter pelo menos 6 caracteres'
-      ]
+        (v) => !!v || "Senha é obrigatória",
+        (v) => v.length >= 6 || "Senha deve ter pelo menos 6 caracteres",
+      ],
     };
   },
   methods: {
@@ -74,17 +68,21 @@ export default {
       } catch (err) {
         if (err.response) {
           // Se houver uma resposta de erro do servidor
-          alert(err.response.data);
+          window.Toast.fire({
+            icon: "error",
+            title: err.response.data,
+          });
         } else {
           // Se ocorrer um erro que não seja relacionado à resposta do servidor
-          alert("Ocorreu um erro durante o login. Por favor, tente novamente.");
+          window.Toast.fire({
+            icon: "error",
+            title: err,
+          });
         }
       }
     },
   },
-}
+};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

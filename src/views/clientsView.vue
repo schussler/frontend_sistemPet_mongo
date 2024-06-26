@@ -7,6 +7,7 @@
         <v-btn text color="primary" @click="openDialogCreate">
           <v-icon>mdi-account-plus</v-icon>
         </v-btn>
+
         <v-spacer></v-spacer>
         <v-text-field
           v-model="search"
@@ -120,9 +121,7 @@ export default {
       this.$refs.datailsClient.dialog = true;
       this.$refs.datailsClient.item = item;
     },
-    view(id) {
-      alert("Visualizando item com ID: " + id);
-    },
+
     formatarTelefone(telefone) {
       if (!telefone) return "telefone nao cadastrado";
       // Verifica se telefone é uma string
@@ -169,7 +168,10 @@ export default {
         this.loading = false; // Marca o loading como falso após os dados serem carregados
       })
       .catch((err) => {
-        alert(err.response);
+        window.Toast.fire({
+          icon: "error",
+          title: err.response.data,
+        });
         this.loading = false; // Marca o loading como falso após os dados serem carregados
       });
   },
