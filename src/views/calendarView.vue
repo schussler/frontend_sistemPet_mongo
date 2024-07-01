@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import calendar from "../components/fullCalendar.vue";
+import calendar from "../components/appointments/fullCalendar.vue";
 import bottom_bar from "../components/bottomBar.vue";
 
 export default {

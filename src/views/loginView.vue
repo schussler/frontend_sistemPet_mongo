@@ -37,7 +37,7 @@
 
 <script>
 import axios from "axios";
-import router from "@/router"; // Importe o router Vue-router
+import router from "@/router"; // Importe o router
 export default {
   data() {
     return {
@@ -58,7 +58,7 @@ export default {
     async login() {
       try {
         const response = await axios.post(
-          "https://backend-sistem-pet-mongo.vercel.app/login",
+          `${process.env.VUE_APP_API_URL}/login`,
           {
             email: this.email,
             password: this.password,

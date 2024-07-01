@@ -2,17 +2,17 @@
   <v-container fluid class="view">
     <bottom_bar />
 
-    <createClient ref="createClient" />
-    <datailsClient ref="datailsClient" />
+    <createUser ref="createUser" />
     <v-card flat>
       <v-card-title class="d-flex align-center pe-2">
-        <v-btn text color="primary" @click="openDialogCreate">
+        <v-btn text color="success" @click="openDialogCreate">
           <v-icon>mdi-account-plus</v-icon>
         </v-btn>
 
         <v-spacer></v-spacer>
-        Clientes
+        Usuarios
         <v-spacer></v-spacer>
+
         <v-text-field
           v-model="search"
           label="Pesquisar"
@@ -37,35 +37,35 @@
           <span class="nowrap">{{ item.name }}</span>
         </template>
 
-        <template v-slot:[`item.pets`]="{ item }">
-          <span class="nowrap">
-            {{
-              item.pets.length > 0
-                ? item.pets.map((pet) => pet.name).join(" - ")
-                : "sem pets cadastrados"
-            }}
+        <!-- Coluna email -->
+        <template v-slot:[`item.email`]="{ item }">
+          <span class="nowrap">{{ item.email }}</span>
+        </template>
+        <!-- Coluna cargo -->
+        <template v-slot:[`item.role`]="{ item }">
+          <span class="nowrap text-center">
+            <template v-if="item.role === 1">
+              <v-chip color="green">
+                <v-icon>mdi mdi-cog-outline</v-icon>
+              </v-chip>
+            </template>
+            <template v-else-if="item.role === 2">
+              <v-chip color="red"><v-icon>mdi mdi-account</v-icon></v-chip>
+            </template>
+            <template v-else>
+              <v-icon>mdi-help-circle</v-icon> unknown
+            </template>
           </span>
         </template>
 
-        <!-- Coluna Contato -->
-        <template v-slot:[`item.phone`]="{ item }">
-          <span class="nowrap"
-            >{{ formatarTelefone(item.phone)
-            }}<v-icon class="pl-3 icon_whats" @click="sendWhatsapp(item.phone)"
-              >mdi-whatsapp</v-icon
-            ></span
-          >
+        <!-- Coluna comissao -->
+        <template v-slot:[`item.commissions`]="{}">
+          <span class="nowrap"> R$ 10000,00 </span>
         </template>
-
-        <!-- Coluna endereço -->
-        <template v-slot:[`item.address`]="{ item }">
-          <span class="text-center nowrap">{{ item.address }}</span>
-        </template>
-
         <!-- Coluna açoes -->
         <template v-slot:[`item.actions`]="{ item }">
-          <v-btn color="primary" @click="openDialogDatails(item)">
-            <v-icon>mdi-eye</v-icon>
+          <v-btn color="red" @click="deleteUser(item._id)">
+            <v-icon>mdi-trash-can</v-icon>
           </v-btn>
         </template>
 
@@ -94,14 +94,12 @@
 
 <script>
 import axios from "axios";
-import createClient from "../components/clients/createClient.vue";
-import datailsClient from "../components/clients/datailsClient.vue";
+import createUser from "../components/users/createUser.vue";
 import bottom_bar from "../components/bottomBar.vue";
 
 export default {
   components: {
-    createClient,
-    datailsClient,
+    createUser,
     bottom_bar,
   },
   data() {
@@ -109,51 +107,69 @@ export default {
       page: 1,
       itemsPerPage: 10,
       search: "",
-      loading: false,
+      loading: true,
       items: [],
       headers: [
         { title: "Nome", align: "start", sortable: true, value: "name" },
-        { title: "Pets", align: "start", sortable: true, value: "pets" },
-        { title: "Contato", align: "start", sortable: true, value: "phone" },
-        { title: "Endereço", align: "start", sortable: true, value: "address" },
+        { title: "Email", align: "start", sortable: true, value: "email" },
+        { title: "Cargo", align: "start", sortable: true, value: "role" },
+        {
+          title: "Comissoes",
+          align: "start",
+          sortable: true,
+          value: "commissions",
+        },
         { title: "Ações", align: "center", sortable: false, value: "actions" },
       ],
     };
   },
   methods: {
     openDialogCreate() {
-      this.$refs.createClient.dialog = true; // Altera o valor de dialog para true no componente createClient.vue
-    },
-    openDialogDatails(item) {
-      this.$refs.datailsClient.dialog = true;
-      this.$refs.datailsClient.item = item;
+      this.$refs.createUser.dialog = true; // Altera o valor de dialog para true no componente createClient.vue
     },
 
-    formatarTelefone(telefone) {
-      if (!telefone) return "telefone nao cadastrado";
-      // Verifica se telefone é uma string
-      if (typeof telefone !== "string") {
-        // Converte telefone para string (se possível)
-        telefone = String(telefone);
+    async deleteUser(_id) {
+      const token = localStorage.getItem("token");
+      const axiosConfig = {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      };
+
+      if (!_id) {
+        return window.Toast.fire({
+          icon: "error",
+          title: "id nao pode ser nulo",
+        });
       }
-      // Formatação específica para (21) 98181-0650
-      if (telefone.length === 11) {
-        return `(${telefone.substring(0, 2)}) ${telefone.substring(
-          2,
-          7
-        )}-${telefone.substring(7, 11)}`;
-      }
-      // Outros formatos podem ser tratados aqui conforme necessário
-      return telefone; // Retorna telefone sem formatação se não atender ao critério
-    },
-    sendWhatsapp(phone) {
-      // Remover todos os caracteres que não sejam dígitos
+      this.dialog = false;
 
-      // Montar o link do WhatsApp
-      const linkWhatsapp = `https://web.whatsapp.com/send?phone=55${phone}`;
-
-      // Abrir o link em uma nova aba
-      window.open(linkWhatsapp, "_blank");
+      this.$swal
+        .fire({
+          title: "Deseja excluir o Cliente?",
+          showDenyButton: true,
+          showCancelButton: false,
+          denyButtonText: `Excluir`,
+          confirmButtonText: "Cancelar",
+        })
+        .then((result) => {
+          /* Read more about isConfirmed, isDenied below */
+          if (result.isDenied) {
+            try {
+              axios.delete(
+                `${process.env.VUE_APP_API_URL}/users/${_id}`,
+                axiosConfig
+              );
+              this.$swal.fire("Excluido!", "", "success").then(() => {
+                location.reload();
+              });
+            } catch (err) {
+              this.$swal.fire(`${err}`, "", "error");
+            }
+          } else if (result.isConfirmed) {
+            location.reload();
+          }
+        });
     },
   },
   computed: {
@@ -161,7 +177,6 @@ export default {
       return Math.ceil(this.items.length / this.itemsPerPage);
     },
   },
-
   mounted() {
     const token = localStorage.getItem("token");
     const axiosConfig = {
@@ -170,7 +185,7 @@ export default {
       },
     };
     axios
-      .get(`${process.env.VUE_APP_API_URL}/clients`, axiosConfig)
+      .get(`${process.env.VUE_APP_API_URL}/users`, axiosConfig)
       .then((response) => {
         this.items = response.data;
         this.loading = false; // Marca o loading como falso após os dados serem carregados
@@ -197,5 +212,10 @@ export default {
 }
 .icon_whats:hover {
   color: green;
+}
+.nowrap {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

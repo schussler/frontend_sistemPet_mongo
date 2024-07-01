@@ -23,6 +23,18 @@ const routes = [
     component: () => import("../views/calendarView.vue"),
     meta: { requiresAuth: true },
   },
+  {
+    path: "/users",
+    name: "usuarios",
+    component: () => import("../views/usersView.vue"),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/services",
+    name: "serviços",
+    component: () => import("../views/serviceView.vue"),
+    meta: { requiresAuth: true },
+  },
 ];
 
 const router = createRouter({

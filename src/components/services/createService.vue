@@ -1,38 +1,32 @@
 <template>
   <div class="text-center">
     <v-dialog
+      class="v-dialog"
       v-model="dialog"
-      style="overflow: initial; z-index: initial"
       max-width="600"
+      style="overflow: initial; z-index: initial"
     >
-      <v-card prepend-icon="mdi mdi-paw" title="Cadastrar Pet">
+      <v-card prepend-icon="mdi mdi-dog-service" title="Cadastrar Serviço">
         <v-card-text>
           <v-form>
             <v-row>
               <v-col cols="12" md="6">
                 <v-text-field
-                  v-model="nomePet"
-                  label="Nome do Pet*"
+                  v-model="nameService"
+                  label="Nome do serviço*"
                   required
                   variant="outlined"
                 ></v-text-field>
               </v-col>
 
               <v-col cols="12" md="6">
-                <v-text-field
-                  v-model="race"
-                  label="Raça do pet*"
+                <v-number-input
+                  v-model="value"
                   required
+                  label="Valor do Serviço*"
                   variant="outlined"
-                ></v-text-field>
-              </v-col>
-
-              <v-col cols="12">
-                <v-textarea
-                  v-model="obs"
-                  label="Observaçoes no Pet"
-                  variant="outlined"
-                ></v-textarea>
+                  control-variant="split"
+                ></v-number-input>
               </v-col>
             </v-row>
 
@@ -45,7 +39,7 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn text @click="dialog = false">Fechar</v-btn>
-              <v-btn color="primary" @click="createPet">Criar</v-btn>
+              <v-btn color="primary" @click="createService">Cadastrar</v-btn>
             </v-card-actions>
           </v-form>
         </v-card-text>
@@ -56,71 +50,69 @@
 
 <script>
 import axios from "axios";
+import { VNumberInput } from "vuetify/labs/VNumberInput";
+
 export default {
   data() {
     return {
       dialog: false,
-      id: "",
-      nomePet: "",
-      race: "",
-      obs: "",
+      nameService: "",
+      value: "",
     };
   },
+  components: {
+    VNumberInput,
+  },
   methods: {
-    async createPet() {
-      // Lógica de confirmação aqui
+    async createService() {
       const token = localStorage.getItem("token");
       const axiosConfig = {
         headers: {
           authorization: `Bearer ${token}`,
         },
       };
+      if (!this.nameService || this.nameService.trim() === "") {
+        return window.Toast.fire({
+          icon: "error",
+          title: "Nome é obrigatório",
+        });
+      }
+      if (!this.value) {
+        return window.Toast.fire({
+          icon: "error",
+          title: "Valor é obrigatório",
+        });
+      }
       try {
-        if (!this.nomePet || this.nomePet.trim() === "") {
-          return window.Toast.fire({
-            icon: "error",
-            title: "Nome é obrigatorio",
-            popup: {
-              className: "...",
-              zIndex: 30000,
-            },
-          });
-        }
-        if (!this.race || this.race.trim() === "") {
-          return window.Toast.fire({
-            icon: "error",
-            title: "Raça é obrigatorio",
-          });
-        }
-        const newPet = {
-          clientId: this.id,
-          name: this.nomePet,
-          race: this.race,
-          obs: this.obs,
+        const newService = {
+          name: this.nameService,
+          value: String(this.value),
         };
+        console.log(newService);
         await axios.post(
-          `${process.env.VUE_APP_API_URL}/pets`,
-          newPet,
+          `${process.env.VUE_APP_API_URL}/services`,
+          newService,
           axiosConfig
         );
         this.dialog = false;
         this.$swal
           .fire({
             title: "Eba",
-            text: "Pet cadastrado com sucesso",
+            text: "Serviço cadastrado com sucesso",
             icon: "success",
           })
-
           .then((result) => {
             if (result.isConfirmed) {
               location.reload();
             }
           });
       } catch (err) {
-        console.log(err.response.data.message);
+        console.log(err);
         window.Toast.fire({
           icon: "error",
-          title: `${err}`,
+          title: `Erro: ${
+            err.response ? err.response.data.message : err.message
+          }`,
         });
       }
     },

@@ -20,10 +20,24 @@
       <span>Clientes</span>
     </v-btn>
 
-    <v-btn>
-      <v-icon>mdi-cog</v-icon>
-      <span>Configs</span>
-    </v-btn>
+    <v-speed-dial
+      location="bottom center"
+      transition="slide-y-reverse-transition"
+    >
+      <template v-slot:activator="{ props: activatorProps }">
+        <v-btn v-bind="activatorProps">
+          <v-icon>mdi-cog</v-icon>
+          <span>Configs</span>
+        </v-btn>
+      </template>
+
+      <v-btn class="bg-purple-darken-2" :to="{ path: '/services' }"
+        >Serviços</v-btn
+      >
+      <v-btn class="bg-purple-darken-2" :to="{ path: '/users' }"
+        >Usuarios</v-btn
+      >
+    </v-speed-dial>
   </v-bottom-navigation>
 </template>
 

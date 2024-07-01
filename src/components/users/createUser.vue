@@ -6,14 +6,14 @@
       max-width="600"
       style="overflow: initial; z-index: initial"
     >
-      <v-card prepend-icon="mdi-account" title="Cadastrar Cliente">
+      <v-card prepend-icon="mdi-account" title="Cadastrar Usuario">
         <v-card-text>
-          <v-form>
+          <v-form v-model="valid">
             <v-row>
               <v-col cols="12" md="6">
                 <v-text-field
-                  v-model="nomeCliente"
-                  label="Nome do Cliente*"
+                  v-model="nameUser"
+                  label="Nome do usuario*"
                   required
                   variant="outlined"
                 ></v-text-field>
@@ -21,21 +21,28 @@
 
               <v-col cols="12" md="6">
                 <v-text-field
-                  v-model="contato"
-                  label="Contato*"
+                  v-model="email"
+                  label="Email*"
+                  :rules="emailRules"
                   required
                   variant="outlined"
-                  hint="Não colocar zero na frente do número"
-                  @input="formatarTelefone"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  v-model="password"
+                  :rules="passwordRules"
+                  label="Password*"
+                  required
+                  variant="outlined"
                 ></v-text-field>
               </v-col>
 
-              <v-col cols="12">
-                <v-textarea
-                  v-model="endereco"
-                  label="Endereço"
-                  variant="outlined"
-                ></v-textarea>
+              <v-col cols="12" md="6">
+                <v-radio-group inline v-model="role" :mandatory="true">
+                  <v-radio label="Admin" value="1"></v-radio>
+                  <v-radio label="Funcionario" value="2"></v-radio>
+                </v-radio-group>
               </v-col>
             </v-row>
 
@@ -48,7 +55,7 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn text @click="dialog = false">Fechar</v-btn>
-              <v-btn color="primary" @click="createClient(contato)"
+              <v-btn color="primary" :disabled="!valid" @click="createUser()"
                 >Criar</v-btn
               >
             </v-card-actions>
@@ -64,15 +71,25 @@ import axios from "axios";
 export default {
   data() {
     return {
+      valid: false,
+
       dialog: false,
-      nomeCliente: "",
-      contato: "",
-      endereco: "",
-      ctt: "",
+      nameUser: "",
+      email: "",
+      password: "",
+      role: "2",
+      emailRules: [
+        (v) => !!v || "E-mail é obrigatório",
+        (v) => /.+@.+\..+/.test(v) || "E-mail deve ser válido",
+      ],
+      passwordRules: [
+        (v) => !!v || "Senha é obrigatória",
+        (v) => v.length >= 6 || "Senha deve ter pelo menos 6 caracteres",
+      ],
     };
   },
   methods: {
-    async createClient() {
+    async createUser() {
       // Lógica de confirmação aqui
       const token = localStorage.getItem("token");
       const axiosConfig = {
@@ -81,35 +98,42 @@ export default {
         },
       };
       try {
-        if (!this.nomeCliente || this.nomeCliente.trim() === "") {
+        if (!this.nameUser || this.nameUser.trim() === "") {
           return window.Toast.fire({
             icon: "error",
             title: "Nome é obrigatorio",
           });
         }
-        if (!this.contato || this.contato.trim() === "") {
+        if (!this.email || this.email.trim() === "") {
           return window.Toast.fire({
             icon: "error",
-            title: "Contato é obrigatorio",
+            title: "Email é obrigatorio",
+          });
+        }
+        if (!this.password || this.password.trim() === "") {
+          return window.Toast.fire({
+            icon: "error",
+            title: "Senha é obrigatorio",
           });
         }
 
-        const newClient = {
-          name: this.nomeCliente,
-          phone: this.ctt,
-          address: this.endereco,
+        const newUser = {
+          name: this.nameUser,
+          email: this.email,
+          password: this.password,
+          role: this.role,
         };
-
+        console.log(newUser);
         await axios.post(
-          `${process.env.VUE_APP_API_URL}/clients`,
-          newClient,
+          `${process.env.VUE_APP_API_URL}/users`,
+          newUser,
           axiosConfig
         );
         this.dialog = false;
         this.$swal
           .fire({
             title: "Eba",
-            text: "Cliente cadastrado com sucesso",
+            text: "Usuario cadastrado com sucesso",
             icon: "success",
           })
 
@@ -121,24 +145,9 @@ export default {
       } catch (err) {
         window.Toast.fire({
           icon: "error",
-          title: `${err}`,
+          title: `${err.response.data.message}`,
         });
       }
-    },
-
-    formatarTelefone() {
-      // Remover todos os caracteres que não são dígitos
-      let phoneNumber = this.contato.replace(/\D/g, "");
-      // Aplicar a formatação (00) 99999-9999 em tempo real
-      let formattedPhoneNumber = phoneNumber.replace(
-        /(\d{2})(\d{5})(\d{4})/,
-        "($1) $2-$3"
-      );
-      let n = this.contato;
-      this.ctt = n;
-
-      // Atualizar o modelo com o número formatado
-      this.contato = formattedPhoneNumber;
     },
   },
 };

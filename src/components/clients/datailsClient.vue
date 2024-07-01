@@ -136,102 +136,6 @@ export default {
     };
   },
   methods: {
-    async deletePet(_id) {
-      const token = localStorage.getItem("token");
-      const axiosConfig = {
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      };
-      if (!_id) {
-        return window.Toast.fire({
-          icon: "error",
-          title: "id nao pode ser nulo",
-        });
-      }
-      this.dialog = false;
-
-      this.$swal
-        .fire({
-          title: "Deseja excluir o Pet?",
-          showDenyButton: true,
-          showCancelButton: false,
-          denyButtonText: `Excluir`,
-          confirmButtonText: "Cancelar",
-        })
-        .then((result) => {
-          /* Read more about isConfirmed, isDenied below */
-          if (result.isDenied) {
-            try {
-              axios.delete(
-                `https://backend-sistem-pet-mongo.vercel.app/pets/${_id}`,
-                axiosConfig
-              );
-              this.$swal.fire("Excluido!", "", "success").then(() => {
-                location.reload();
-              });
-            } catch (err) {
-              this.$swal.fire(`${err}`, "", "error");
-            }
-          } else if (result.isConfirmed) {
-            location.reload();
-          }
-        });
-    },
-    async updatePet(pet) {
-      // Lógica de confirmação aqui
-      const token = localStorage.getItem("token");
-      const axiosConfig = {
-        headers: {
-          authorization: `Bearer ${token}`,
-        },
-      };
-
-      const updatePet = {
-        name: pet.name,
-        race: pet.race,
-        obs: pet.obs,
-      };
-      this.dialog = false;
-      this.$swal
-        .fire({
-          title: "Deseja Editar o Pet?",
-          showDenyButton: true,
-          denyButtonText: `Cancelar`,
-          confirmButtonText: "Editar",
-        })
-
-        .then((result) => {
-          /* Read more about isConfirmed, isDenied below */
-          if (result.isConfirmed) {
-            try {
-              axios
-                .put(
-                  `https://backend-sistem-pet-mongo.vercel.app/pets/${pet._id}`,
-                  updatePet,
-                  axiosConfig
-                )
-                .then(() => {
-                  location.reload();
-                  return;
-                });
-              this.$swal.fire("Editado!", "", "success").then(() => {
-                location.reload();
-              });
-            } catch (err) {
-              this.$swal.fire(`${err}`, "", "error");
-            }
-          } else if (result.isDenied) {
-            location.reload();
-          }
-        });
-    },
-    openCreatePet(_id) {
-      console.log(_id);
-      this.$refs.createPet.dialog = true;
-      this.$refs.createPet.id = _id;
-      this.dialog = false;
-    },
     async deleteClient(_id) {
       const token = localStorage.getItem("token");
       const axiosConfig = {
@@ -261,7 +165,7 @@ export default {
           if (result.isDenied) {
             try {
               axios.delete(
-                `https://backend-sistem-pet-mongo.vercel.app/clients/${_id}`,
+                `${process.env.VUE_APP_API_URL}/clients/${_id}`,
                 axiosConfig
               );
               this.$swal.fire("Excluido!", "", "success").then(() => {
@@ -310,7 +214,7 @@ export default {
             try {
               axios
                 .put(
-                  `https://backend-sistem-pet-mongo.vercel.app/clients/${item._id}`,
+                  `${process.env.VUE_APP_API_URL}/clients/${item._id}`,
                   updateClient,
                   axiosConfig
                 )
