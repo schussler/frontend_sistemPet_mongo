@@ -1,0 +1,96 @@
+{
+  "splits": {
+    "splits": [
+      {
+        "id": 1,
+        "label": "Douglas"
+      },
+      {
+        "id": 2,
+        "label": "Gabi"
+      },
+      {
+        "id": 3,
+        "label": "Bianca"
+      },
+      {
+        "id": 4,
+        "label": "joao"
+      }
+    ]
+  },
+  "events": {
+    "events": [
+      {
+        "start": "2024-07-01 10:00",
+        "end": "2024-07-01 11:00",
+        "split": 1,
+        "class": "func-1",
+        "client_name": "Douglas",
+        "client_phone": "21981810640",
+        "pet_race": "york",
+        "pet_name": "junior",
+        "taxi_dog": false,
+        "services": [
+          {
+            "service_name": "banho",
+            "service_price": "50"
+          },
+          {
+            "service_name": "hidratacao",
+            "service_price": "25"
+          }
+        ],
+        "status_service": ""
+      },
+      {
+        "start": "2024-07-01 19:00",
+        "end": "2024-07-01 20:00",
+        "split": 2,
+        "class": "func-2",
+        "client_name": "FLAVIA",
+        "client_phone": "21981810640",
+        "pet_race": "YORK",
+        "pet_name": "fabio",
+        "taxi_dog": true,
+        "services": [
+          {
+            "service_name": "banho",
+            "service_price": "50"
+          },
+          {
+            "service_name": "hidratacao",
+            "service_price": "25"
+          },
+          {
+            "service_name": "tosa",
+            "service_price": "70"
+          }
+        ],
+        "status_service": "pago"
+      },
+      {
+        "start": "2024-07-01 12:00",
+        "end": "2024-07-01 13:00",
+        "split": 3,
+        "class": "func-1",
+        "client_name": "LUCIMAR",
+        "client_phone": "21981810640",
+        "pet_race": "POODLE",
+        "pet_name": "catarina",
+        "taxi_dog": true,
+        "services": [
+          {
+            "service_name": "banho",
+            "service_price": "50"
+          },
+          {
+            "service_name": "tosa",
+            "service_price": "25"
+          }
+        ],
+        "status_service": "cancelado"
+      }
+    ]
+  }
+}
