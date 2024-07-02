@@ -136,6 +136,109 @@ export default {
     };
   },
   methods: {
+    openCreatePet(_id) {
+      this.$refs.createPet.dialog = true;
+      this.$refs.createPet.id = _id;
+      this.dialog = false;
+    },
+    async deletePet(_id) {
+      const token = localStorage.getItem("token");
+      const axiosConfig = {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      };
+
+      if (!_id) {
+        return window.Toast.fire({
+          icon: "error",
+          title: "id nao pode ser nulo",
+        });
+      }
+      this.dialog = false;
+
+      this.$swal
+        .fire({
+          title: "Deseja excluir o Pet?",
+          showDenyButton: true,
+          showCancelButton: false,
+          denyButtonText: `Excluir`,
+          confirmButtonText: "Cancelar",
+        })
+        .then((result) => {
+          /* Read more about isConfirmed, isDenied below */
+          if (result.isDenied) {
+            try {
+              axios.delete(
+                `${process.env.VUE_APP_API_URL}/pets/${_id}`,
+                axiosConfig
+              );
+              this.$swal.fire("Excluido!", "", "success").then(() => {
+                location.reload();
+              });
+            } catch (err) {
+              this.$swal.fire(`${err}`, "", "error");
+            }
+          } else if (result.isConfirmed) {
+            location.reload();
+          }
+        });
+    },
+    async updatePet(pet) {
+      // Lógica de confirmação aqui
+      const token = localStorage.getItem("token");
+      const axiosConfig = {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      };
+
+      const updatePet = {
+        clientId: this.id,
+        name: pet.name,
+        race: pet.race,
+        obs: pet.obs,
+      };
+      if (!pet._id) {
+        return window.Toast.fire({
+          icon: "error",
+          title: "id nao pode ser nulo",
+        });
+      }
+      this.dialog = false;
+      this.$swal
+        .fire({
+          title: "Deseja Editar o Pet?",
+          showDenyButton: true,
+          denyButtonText: `Cancelar`,
+          confirmButtonText: "Editar",
+        })
+
+        .then((result) => {
+          /* Read more about isConfirmed, isDenied below */
+          if (result.isConfirmed) {
+            try {
+              axios
+                .put(
+                  `${process.env.VUE_APP_API_URL}/pets/${pet._id}`,
+                  updatePet,
+                  axiosConfig
+                )
+                .then(() => {
+                  location.reload();
+                  return;
+                });
+              this.$swal.fire("Editado!", "", "success").then(() => {
+                location.reload();
+              });
+            } catch (err) {
+              this.$swal.fire(`${err.response.data}`, "", "error");
+            }
+          } else if (result.isDenied) {
+            location.reload();
+          }
+        });
+    },
     async deleteClient(_id) {
       const token = localStorage.getItem("token");
       const axiosConfig = {

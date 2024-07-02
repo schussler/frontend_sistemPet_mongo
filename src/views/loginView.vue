@@ -26,8 +26,19 @@
             autocomplete="current-password"
           ></v-text-field>
 
-          <v-btn :disabled="!valid" color="primary" class="mr-4" @click="login">
-            Login
+          <v-btn
+            :disabled="!valid || loading"
+            color="primary"
+            class="mr-4"
+            @click="login"
+          >
+            <v-progress-circular
+              v-if="loading"
+              indeterminate
+              color="white"
+              size="20"
+            ></v-progress-circular>
+            <span v-else>Login</span>
           </v-btn>
         </v-form>
       </v-card-text>
@@ -38,12 +49,14 @@
 <script>
 import axios from "axios";
 import router from "@/router"; // Importe o router
+
 export default {
   data() {
     return {
       valid: false,
       email: "",
       password: "",
+      loading: false,
       emailRules: [
         (v) => !!v || "E-mail é obrigatório",
         (v) => /.+@.+\..+/.test(v) || "E-mail deve ser válido",
@@ -56,6 +69,7 @@ export default {
   },
   methods: {
     async login() {
+      this.loading = true;
       try {
         const response = await axios.post(
           `${process.env.VUE_APP_API_URL}/login`,
@@ -82,6 +96,8 @@ export default {
             title: err,
           });
         }
+      } finally {
+        this.loading = false;
       }
     },
   },
