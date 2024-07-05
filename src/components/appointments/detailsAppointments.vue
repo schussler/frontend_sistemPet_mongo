@@ -7,8 +7,6 @@
       style="overflow: initial; z-index: 1000"
     >
       <v-card prepend-icon="mdi-dog" title="Agendar Serviço">
-        {{ start }}
-        {{ end }}
         <v-card-text>
           <v-form>
             <v-row>
@@ -25,6 +23,7 @@
 
               <!-- pets -->
               <v-col cols="12" md="6">
+                {{ pets }}
                 <v-combobox
                   v-model="petName"
                   required
@@ -181,6 +180,7 @@ export default {
       startTime: "",
       endTime: "",
       // -------- vai pro banco --------------
+      clientName: "",
       petName: "",
       selectServices: [],
       start: "",

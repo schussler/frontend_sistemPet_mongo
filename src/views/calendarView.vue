@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import Calender from "../components/appointments/calendarComponent.vue";
+import Calender from "../components/calendar/calendarComponent.vue";
 import bottom_bar from "../components/bottomBar.vue";
 import create_appointment from "../components/appointments/createAppintments.vue";
 
