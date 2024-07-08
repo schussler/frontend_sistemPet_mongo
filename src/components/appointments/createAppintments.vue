@@ -7,8 +7,6 @@
       style="overflow: initial; z-index: 1000"
     >
       <v-card prepend-icon="mdi-dog" title="Agendar Serviço">
-        {{ start }}
-        {{ end }}
         <v-card-text>
           <v-form>
             <v-row>
@@ -19,7 +17,7 @@
                   required
                   variant="outlined"
                   label="Nome do Cliente*"
-                  :items="clientNames"
+                  :items="clients.map((client) => client.name)"
                 ></v-combobox>
               </v-col>
 
@@ -52,7 +50,7 @@
                   v-model="selectServices"
                   required
                   :hide-no-data="false"
-                  :items="servicesNames"
+                  :items="services.map((services) => services.name)"
                   label="Adicione Serviços"
                   hide-selected
                   chips
@@ -68,7 +66,17 @@
                   </template>
                 </v-combobox>
               </v-col>
-
+              <!-- TAXIDOG -->
+              <v-col cols="12">
+                <v-radio-group v-model="taxi" inline>
+                  <v-radio color="red" value="0" label="SEM taxi-dog"></v-radio>
+                  <v-radio
+                    color="success"
+                    value="1"
+                    label="COM taxi-dog"
+                  ></v-radio>
+                </v-radio-group>
+              </v-col>
               <!-- dia de agendamento -->
               <v-col cols="12">
                 <v-date-input
@@ -134,7 +142,7 @@
                   required
                   variant="outlined"
                   label="Funcionario*"
-                  :items="userNames"
+                  :items="user.map((user) => user.name)"
                 ></v-combobox>
               </v-col>
               <!-- observaçoes -->
@@ -156,7 +164,7 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn text @click="dialog = false">Fechar</v-btn>
-              <v-btn color="primary" @click="formatDate">Criar</v-btn>
+              <v-btn color="primary" @click="createAppo">Criar</v-btn>
             </v-card-actions>
           </v-form>
         </v-card-text>
@@ -186,18 +194,79 @@ export default {
       start: "",
       end: "",
       userName: "",
+      clientName: "",
       obs: "",
+      taxi: "",
 
       // -------- chega do banco --------------
       clients: [], // Armazena os dados completos dos clientes
-      clientNames: [], // Armazena apenas os nomes dos clientes para o combobox
       pets: [], // Armazena os pets do cliente banco de dadosado
-      servicesNames: [], // Armazena os serviços do banco de dados
-      userNames: [],
+      services: [], // Armazena os serviços do banco de dados
+      user: [],
     };
   },
   methods: {
-    formatDate() {
+    async createAppo() {
+      // Lógica de confirmação aqui
+      const token = localStorage.getItem("token");
+      const axiosConfig = {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      };
+      await this.formatDate();
+
+      try {
+        const newAppo = {
+          client_name: this.clientName,
+          pet_name: this.petName,
+          start: this.start,
+          end: this.end,
+          services: this.selectServices,
+          user: this.userName,
+          taxi_dog: this.taxi,
+          obs: this.obs,
+        };
+        console.log(newAppo);
+        // if (!this.client_name || this.client_name.trim() === "") {
+        //   return window.Toast.fire({
+        //     icon: "error",
+        //     title: "cliente é obrigatorio",
+        //   });
+        // }
+        // if (!this.pet_name || this.pet_name.trim() === "") {
+        //   return window.Toast.fire({
+        //     icon: "error",
+        //     title: "pet_name é obrigatorio",
+        //   });
+        // }
+
+        await axios.post(
+          `${process.env.VUE_APP_API_URL}/appointments`,
+          newAppo,
+          axiosConfig
+        );
+        this.dialog = false;
+        this.$swal
+          .fire({
+            title: "Eba",
+            text: "serviço criado com sucesso",
+            icon: "success",
+          })
+
+          .then((result) => {
+            if (result.isConfirmed) {
+              location.reload();
+            }
+          });
+      } catch (err) {
+        window.Toast.fire({
+          icon: "error",
+          title: `${err}`,
+        });
+      }
+    },
+    async formatDate() {
       const date = this.date;
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, "0"); // Mês é base 0, então adicionamos 1
@@ -220,7 +289,6 @@ export default {
         // Armazena os dados completos dos clientes
         this.clients = response.data;
         // Cria um array apenas com os nomes dos clientes
-        this.clientNames = response.data.map((client) => client.name);
       } catch (err) {
         window.Toast.fire({
           icon: "error",
@@ -242,8 +310,6 @@ export default {
         );
         // Armazena os dados completos dos clientes
         this.services = response.data;
-        // Cria um array apenas com os nomes dos clientes
-        this.servicesNames = response.data.map((services) => services.name);
       } catch (err) {
         window.Toast.fire({
           icon: "error",
@@ -263,9 +329,8 @@ export default {
           `${process.env.VUE_APP_API_URL}/users`,
           axiosConfig
         );
-        console.log();
         // Cria um array apenas com os nomes dos clientes
-        this.userNames = response.data.map((user) => user.name);
+        this.user = response.data;
       } catch (err) {
         window.Toast.fire({
           icon: "error",

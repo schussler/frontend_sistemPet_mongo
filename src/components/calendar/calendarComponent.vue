@@ -2,35 +2,36 @@
   <div class="main-demo">
     <div class="w-flex wrap align-center justify-center">
       <div class="grow mx2">
-        {{ splits }}
         <vue-cal
           class="demo full-cal vuecal--full-height-delete"
-          hide-weekends
           locale="pt-br"
-          :disable-views="['years']"
+          :disable-views="['years', 'week']"
           :selected-date="selectedDate"
           :time-from="8 * 60"
           :time-to="21 * 60"
           :split-days="
-            splits.map((split) => {
-              return {
-                ...split,
-                label: split.name, // Criando o novo campo label com o valor de name
-                id: split._id, // Criando o novo campo label com o valor de name
-              };
-            })
+            splits.map((split, index) => ({
+              ...split,
+              label: split.name, // Criando o novo campo label com o valor de name
+              id: split._id, // Criando o novo campo label com o valor de name
+              class: index % 2 === 0 ? 'john' : 'kate', // Alternando classes
+            }))
           "
           sticky-split-labels
-          :events="demoExample.events"
-          active-view="week"
+          :events="
+            appos.map((appos) => ({
+              ...appos,
+              title: appos.client_name + appos.pet_name, // Criando o novo campo label com o valor de name
+              split: appos.user._id,
+            }))
+          "
+          active-view="day"
           :on-event-click="onEventClick"
         >
           >
           <template #split-label="{ split }">
-            <w-icon :color="split.color" size="20"
-              ><span class="mdi mdi-account"></span>
-            </w-icon>
-            <strong :style="`color: ${split.color}`">{{ split.name }}</strong>
+            <w-icon size="20"><span class="mdi mdi-account"></span> </w-icon>
+            <strong>{{ split.name }}</strong>
           </template>
         </vue-cal>
         <detailsAppo ref="detailsAppointments" />
@@ -47,18 +48,20 @@ import detailsAppo from "../appointments/detailsAppointments.vue";
 const demoExample = {
   events: [],
 };
-
+import axios from "axios";
 export default {
   components: { vueCal, detailsAppo },
   data: () => ({
     demoExample,
     selectedDate: new Date(),
     splits: [
-      { label: "John", class: "john" },
-      { label: "Kate", class: "kate" },
-      { label: "John", class: "john" },
-      { label: "Kate", class: "kate" },
+      // { name: "banana" },
+      // { name: "uva" },
+      // { name: "morango" },
+      // { name: "melancia" },
+      // { name: "morango" },
     ],
+    appos: [],
   }),
   methods: {
     onEventClick(event, e) {
@@ -69,22 +72,65 @@ export default {
       // Prevent navigating to narrower view (default vue-cal behavior).
       e.stopPropagation();
     },
+    async fetchUsers() {
+      const token = localStorage.getItem("token");
+      const axiosConfig = {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      };
+      try {
+        const response = await axios.get(
+          `${process.env.VUE_APP_API_URL}/users`,
+          axiosConfig
+        );
+        // Cria um array apenas com os nomes dos clientes
+        this.splits = response.data;
+      } catch (err) {
+        window.Toast.fire({
+          icon: "error",
+          title: err.response.data,
+        });
+      }
+    },
+    async fetchAppos() {
+      const token = localStorage.getItem("token");
+      const axiosConfig = {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      };
+      try {
+        const response = await axios.get(
+          `${process.env.VUE_APP_API_URL}/appointments`,
+          axiosConfig
+        );
+        // Cria um array apenas com os nomes dos clientes
+        this.appos = response.data;
+      } catch (err) {
+        window.Toast.fire({
+          icon: "error",
+          title: err.response.data,
+        });
+      }
+    },
   },
   created() {
+    this.fetchUsers();
+    this.fetchAppos();
     const teste = {
       nome: "oufl",
     };
-    const data_atual = "2024-07-03";
+    const data_atual = "2024-07-05";
     this.demoExample.events.push(
       {
         clientName: "gabryella dos anjos",
-
         title: "aqui!!",
         content: '<i class="w-icon material-icons mt1">sports_tennis</i>',
         start: `${data_atual} 15:30`,
         end: `${data_atual} 17:30`,
         resizable: false,
-        split: "6685fb640b23dc23ba712cd8",
+        split: "667746150197b18bbbfa0654",
         pet: "fred",
       },
       {
@@ -147,12 +193,17 @@ export default {
 .vuecal__body .split1 {
   background-color: red;
 }
-
+.vuecal__cell-date {
+  padding: 30px;
+}
+.vuecal__cell-events-count {
+  padding: 5px 8px;
+}
 .vuecal--date-picker .vuecal__cell-events-count {
   width: 4px;
   height: 4px;
   min-width: 0;
-  padding: 0;
+  padding: 10px;
   margin-top: 4px;
   color: transparent;
   background-color: #42b983; /* $john */
