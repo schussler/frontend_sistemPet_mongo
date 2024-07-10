@@ -13,22 +13,15 @@
             splits.map((split, index) => ({
               ...split,
               label: split.name, // Criando o novo campo label com o valor de name
-              id: split._id, // Criando o novo campo label com o valor de name
+              id: split._id, // Criando o novo campo id com o valor de _id
               class: index % 2 === 0 ? 'john' : 'kate', // Alternando classes
             }))
           "
           sticky-split-labels
-          :events="
-            appos.map((appos) => ({
-              ...appos,
-              title: appos.client_name + appos.pet_name, // Criando o novo campo label com o valor de name
-              split: appos.user._id,
-            }))
-          "
+          :events="formattedEvents"
           active-view="day"
           :on-event-click="onEventClick"
         >
-          >
           <template #split-label="{ split }">
             <w-icon size="20"><span class="mdi mdi-account"></span> </w-icon>
             <strong>{{ split.name }}</strong>
@@ -39,30 +32,52 @@
     </div>
   </div>
 </template>
-
 <script>
 import vueCal from "vue-cal";
 import "vue-cal/dist/vuecal.css";
 import detailsAppo from "../appointments/detailsAppointments.vue";
+import axios from "axios";
 
 const demoExample = {
   events: [],
 };
-import axios from "axios";
+
 export default {
   components: { vueCal, detailsAppo },
   data: () => ({
     demoExample,
     selectedDate: new Date(),
-    splits: [
-      // { name: "banana" },
-      // { name: "uva" },
-      // { name: "morango" },
-      // { name: "melancia" },
-      // { name: "morango" },
-    ],
+    splits: [],
     appos: [],
+    eventClassCounters: {}, // Contadores para alternar classes dos eventos
   }),
+  computed: {
+    formattedEvents() {
+      return this.appos.map((appo) => {
+        // Inicializa o contador para o split se não estiver inicializado
+        if (!this.eventClassCounters[appo.user._id]) {
+          this.eventClassCounters[appo.user._id] = 0;
+        }
+
+        // Alterna a classe baseada no contador
+        const eventClass =
+          this.eventClassCounters[appo.user._id] % 2 === 0 ? "health" : "sport";
+
+        // Incrementa o contador
+        this.eventClassCounters[appo.user._id]++;
+
+        return {
+          ...appo,
+          title: appo.client_name + " " + appo.pet_name,
+          split: appo.user._id,
+          content: appo.services
+            ? appo.services.map((service) => service.name).join(", ")
+            : "",
+          class: eventClass,
+        };
+      });
+    },
+  },
   methods: {
     onEventClick(event, e) {
       this.$refs.detailsAppointments.dialog = true;
@@ -84,7 +99,6 @@ export default {
           `${process.env.VUE_APP_API_URL}/users`,
           axiosConfig
         );
-        // Cria um array apenas com os nomes dos clientes
         this.splits = response.data;
       } catch (err) {
         window.Toast.fire({
@@ -105,7 +119,6 @@ export default {
           `${process.env.VUE_APP_API_URL}/appointments`,
           axiosConfig
         );
-        // Cria um array apenas com os nomes dos clientes
         this.appos = response.data;
       } catch (err) {
         window.Toast.fire({
@@ -122,6 +135,27 @@ export default {
 };
 </script>
 <style>
+.vuecal__event {
+  font-weight: bold; /* Define o peso da fonte para o título do evento */
+
+  display: flex; /* Usa flexbox para alinhar itens verticalmente */
+  flex-direction: column; /* Coloca o conteúdo do evento em coluna */
+  justify-content: center; /* Alinha verticalmente ao centro */
+  border-radius: 4px; /* Arredonda as bordas dos eventos */
+  margin-bottom: 8px; /* Espaçamento inferior entre os eventos */
+}
+.vuecal__event.health {
+  background-color: rgba(253, 156, 66, 0.9) !important;
+  border: 1px solid rgb(233, 136, 46);
+  color: #fff;
+  border: 1px solid rgb(144, 210, 190);
+}
+.vuecal__event.sport {
+  background-color: rgba(255, 102, 102, 0.9) !important;
+  border: 1px solid rgb(235, 82, 82);
+  color: #fff;
+}
+
 .main-demo {
   font-size: 12px;
 }
@@ -134,15 +168,19 @@ export default {
 .main-demo .tagline .title1 {
   letter-spacing: normal;
 }
+
 .vuecal__body .split1 {
   background-color: red;
 }
+
 .vuecal__cell-date {
   padding: 30px;
 }
+
 .vuecal__cell-events-count {
   padding: 5px 8px;
 }
+
 .vuecal--date-picker .vuecal__cell-events-count {
   width: 4px;
   height: 4px;
@@ -205,6 +243,7 @@ export default {
 }
 
 .vuecal__event-time {
+  display: none;
   margin: 3px 0;
   font-size: 12px;
   font-weight: 500;
