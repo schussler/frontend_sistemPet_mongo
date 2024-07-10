@@ -63,8 +63,8 @@
                         <v-btn color="info">Cadastrar Novo Serviço</v-btn>
                       </v-list-item-title>
                     </v-list-item>
-                  </template>
-                </v-combobox>
+                  </template> </v-combobox
+                >{{ selectServices }} - {{ selectedServiceId }}
               </v-col>
               <!-- TAXIDOG -->
               <v-col cols="12">
@@ -138,7 +138,7 @@
               <!-- funcionario -->
               <v-col cols="12">
                 <v-combobox
-                  v-model="userName"
+                  v-model="selectedName"
                   required
                   variant="outlined"
                   label="Funcionario*"
@@ -188,6 +188,9 @@ export default {
       dialog: false,
       startTime: "",
       endTime: "",
+      selectedName: null, // Armazena o nome selecionado
+      selectedUserId: null, // Armazena
+      selectedServiceIds: null, // Armazena
       // -------- vai pro banco --------------
       petName: "",
       selectServices: [],
@@ -205,7 +208,25 @@ export default {
       user: [],
     };
   },
+
   methods: {
+    async updateSelectedUserId(name) {
+      const selectedUser = await this.user.find((user) => user.name === name);
+
+      this.selectedUserId = selectedUser ? selectedUser._id : null;
+    },
+    async updateSelectedServiceIds(names) {
+      if (!Array.isArray(names)) {
+        console.error("Names deve ser um array");
+        return;
+      }
+      // Encontra todos os serviços correspondentes aos nomes selecionados
+      const selectedServices = this.services.filter((service) =>
+        names.includes(service.name)
+      );
+      // Mapeia para obter apenas os IDs dos serviços selecionados
+      this.selectedServiceIds = selectedServices.map((service) => service._id);
+    },
     async createAppo() {
       // Lógica de confirmação aqui
       const token = localStorage.getItem("token");
@@ -215,6 +236,8 @@ export default {
         },
       };
       await this.formatDate();
+      await this.updateSelectedUserId(this.selectedName);
+      await this.updateSelectedServiceIds(this.selectServices);
 
       try {
         const newAppo = {
@@ -222,8 +245,8 @@ export default {
           pet_name: this.petName,
           start: this.start,
           end: this.end,
-          services: this.selectServices,
-          user: this.userName,
+          services: this.selectedServiceIds,
+          user: this.selectedUserId,
           taxi_dog: this.taxi,
           obs: this.obs,
         };

@@ -118,62 +118,6 @@ export default {
   created() {
     this.fetchUsers();
     this.fetchAppos();
-    const teste = {
-      nome: "oufl",
-    };
-    const data_atual = "2024-07-05";
-    this.demoExample.events.push(
-      {
-        clientName: "gabryella dos anjos",
-        title: "aqui!!",
-        content: '<i class="w-icon material-icons mt1">sports_tennis</i>',
-        start: `${data_atual} 15:30`,
-        end: `${data_atual} 17:30`,
-        resizable: false,
-        split: "667746150197b18bbbfa0654",
-        pet: "fred",
-      },
-      {
-        clientName: "gabryella dos anjos",
-
-        start: `${data_atual} 15:30`,
-        end: `${data_atual} 17:30`,
-        title: "Tennaaaaaais",
-        content: '<i class="w-icon material-icons mt1">sports_tennis</i>',
-        pet: "bob",
-        split: "6685fb640b23dc23ba712cd8",
-      },
-      {
-        clientName: "gabryella dos anjos",
-
-        start: `${data_atual} 08:00`,
-        end: `${data_atual} 10:00`,
-        title: "hey",
-        content: '<i class="w-icon material-icons mt1">sports_volleyball</i>',
-        pet: "bob",
-        split: "667746150197b18bbbfa0654",
-      },
-      {
-        clientName: "gabryella dos anjos",
-
-        start: `${data_atual} 09:00`,
-        end: `${data_atual} 11:30`,
-        title: "Golf",
-        content: '<i class="w-icon material-icons mt2">golf_course</i>',
-        pet: "bob",
-        split: 1,
-      },
-      {
-        clientName: "gabryella dos anjos",
-
-        start: `${data_atual} 16:45`,
-        end: `${data_atual} 18:45`,
-        title: teste.nome,
-        content: "BANHO TOSA BEBE",
-        pet: "bob",
-        split: 2,
-      }
-    );
   },
 };
 </script>
