@@ -22,6 +22,21 @@
           active-view="day"
           :on-event-click="onEventClick"
         >
+          <template #event="{ event }">
+            <div :class="['vuecal__event-content', event.class]">
+              <!-- Adiciona o ícone -->
+              <p class="vuecal__event-title">{{ event.title }}</p>
+              <p class="vuecal__event-content">
+                {{ event.content }}
+                <i
+                  style="color: yellow; font-size: 15px"
+                  v-if="event.taxi_dog === 1"
+                  :class="event.icon"
+                ></i>
+                <!-- Condicional para o ícone -->
+              </p>
+            </div>
+          </template>
           <template #split-label="{ split }">
             <w-icon size="20"><span class="mdi mdi-account"></span> </w-icon>
             <strong>{{ split.name }}</strong>
@@ -68,12 +83,13 @@ export default {
 
         return {
           ...appo,
-          title: appo.client_name + " " + appo.pet_name,
+          title: appo.client_name + " - " + appo.pet_name,
           split: appo.user._id,
           content: appo.services
             ? appo.services.map((service) => service.name).join(", ")
             : "",
           class: eventClass,
+          icon: "mdi mdi-car-back", // Custom attribute.
         };
       });
     },

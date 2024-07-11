@@ -29,18 +29,8 @@
                   :hide-no-data="false"
                   :items="pets"
                   label="Nome do Pet*"
-                  hide-selected
                   variant="outlined"
                 >
-                  <!-- rota de criar cliente -->
-
-                  <!-- <template v-slot:no-data>
-                    <v-list-item>
-                      <v-list-item-title>
-                        <v-btn color="info">Criar Novo Pet</v-btn>
-                      </v-list-item-title>
-                    </v-list-item>
-                  </template> -->
                 </v-combobox>
               </v-col>
 
@@ -57,14 +47,7 @@
                   variant="outlined"
                   multiple
                 >
-                  <template v-slot:no-data>
-                    <v-list-item>
-                      <v-list-item-title>
-                        <v-btn color="info">Cadastrar Novo Serviço</v-btn>
-                      </v-list-item-title>
-                    </v-list-item>
-                  </template> </v-combobox
-                >{{ selectServices }} - {{ selectedServiceId }}
+                </v-combobox>
               </v-col>
               <!-- TAXIDOG -->
               <v-col cols="12">
